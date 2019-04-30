@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://gitlab.com/tildah/mdi-component/issues"
   },
-  "homepage": "https://gitlab.com/tildah/mdi-component#README"
+  "homepage": "https://gitlab.com/tildah/mdi-component#README",
+  "dependencies": {
+    "@mdi/js": "^3.6.95"
+  }
 }
