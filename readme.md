@@ -22,7 +22,7 @@ In JS, just import the module.
 
 **main.js**:
 ```javascript
-import "./mdi-component/mdi-component.js";
+import "/node_modules/mdi-component/mdi-component.js";
 ```
 
 Run your server and enjoy! :)
