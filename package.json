@@ -21,6 +21,6 @@
   },
   "homepage": "https://gitlab.com/tildah/mdi-component#README",
   "dependencies": {
-    "@mdi/js": "^3.6.95"
+    "@mdi/svg": "^3.7.95"
   }
 }
