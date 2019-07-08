@@ -1,6 +1,6 @@
 {
   "name": "mdi-component",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "a package for MaterialDesingIcons in es6 web-component",
   "main": "mdi-component.js",
   "scripts": {
