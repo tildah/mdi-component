@@ -11,7 +11,7 @@ npm i mdi-component
 Add `mdi-compoent` and set its attribute `name` to your icon reference in *camelCase*. Eg:
 ```html
 <body>
-  <mdi-component name="accountCircle"></mdi-component>
+  <mdi-component name="account-circle"></mdi-component>
   <script src="main.js" type="module"></script>
 </body>
 ```

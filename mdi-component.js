@@ -1,5 +1,3 @@
-import { getPath } from "./iconExtractor.js";
-
 class MDIComponent extends HTMLElement {
 
   constructor() {
@@ -36,9 +34,9 @@ class MDIComponent extends HTMLElement {
 
   connectedCallback() {
     this.render("preTemplate");
-    
+
     const objectElement = this.querySelector("object");
-    objectElement.addEventListener("load", ()=> {
+    objectElement.addEventListener("load", () => {
       this.render("template");
     })
   }
