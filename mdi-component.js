@@ -1,51 +1,137 @@
 class MDIComponent extends HTMLElement {
 
-  constructor() {
-    super();
+  constructor(...args) {
+    super(...args);
+    this.shadow = this.attachShadow({ mode: 'open' });
   }
 
   get preTemplate() {
 
-    const filePath = `/node_modules/@mdi/svg/svg/${this.getAttribute("name")}.svg`;
+    const name = this.getAttribute("name");
+    const filePath = `/node_modules/@mdi/svg/svg/${name}.svg`;
+
+    if (!name) throw new Error("'path' and 'name' attributes are both null");
 
     return /*html*/`
-      <style>
-      </style>
       <object type="image/svg+xml" data="${filePath}"></object>
     `
   }
 
-  get template() {
+  template(path) {
 
     const inheritedStyle = window.getComputedStyle(this);
-    const fontSize = inheritedStyle.getPropertyValue("font-size");
-    const color = inheritedStyle.getPropertyValue("color");
+    const inheritedSize = inheritedStyle.getPropertyValue("font-size");
+    const inheritedColor = inheritedStyle.getPropertyValue("color");
 
-    const objectElement = this.querySelector("object");
-    const svgDoc = objectElement.contentDocument;
-    const path = svgDoc.querySelector("path");
+    const size = this.getAttribute("size") || inheritedSize;
+    const color = this.getAttribute("color") || inheritedColor;
+
+    const containerClasses = ["container"];
+    if (this.hasAttribute("horizontal")) containerClasses.push("flip-h");
+    if (this.hasAttribute("vertical")) containerClasses.push("flip-v");
 
     return /*html*/`
-      <svg height="${fontSize}" width="${fontSize}" viewBox="0 0 24 24">
-        <path fill="${color}" d="${path.getAttribute('d')}"/>
-      </svg>
+      <style>
+        .container {
+          display: inline-block;
+        }
+
+        .flip-h {
+          -webkit-transform: scaleX(-1);
+          transform: scaleX(-1);
+          filter: FlipH;
+          -ms-filter: "FlipH";
+        }
+
+        .flip-v {
+          -webkit-transform: scaleY(-1);
+          transform: scaleY(-1);
+          filter: FlipV;
+          -ms-filter: "FlipV";
+        }
+
+        .rotate {
+          -webkit-transform: rotate(${this.getAttribute("rotate")}deg);
+          -ms-transform: rotate(${this.getAttribute("rotate")}deg);
+          transform: rotate(${this.getAttribute("rotate")}deg);
+        }
+
+        @-webkit-keyframes mdi-spin {
+          0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+          }
+          100% {
+            -webkit-transform: rotate(359deg);
+            transform: rotate(359deg);
+          }
+        }
+        @keyframes mdi-spin {
+          0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+          }
+          100% {
+            -webkit-transform: rotate(359deg);
+            transform: rotate(359deg);
+          }
+        }
+
+        .spin {
+          -webkit-animation: mdi-spin 2s infinite linear;
+          animation: mdi-spin 2s infinite linear;
+        }
+      </style>
+      <span class="container ${this.hasAttribute("horizontal") ? "flip-h" : ""}">
+        <span class="container ${this.hasAttribute("vertical") ? "flip-v" : ""}">
+          <span class="container ${this.getAttribute("rotate") ? "rotate" : ""}">
+            <span class="container ${this.hasAttribute("spin") ? "spin" : ""}">
+              <svg height="${size}" width="${size}" viewBox="0 0 24 24">
+                <path fill="${color}" d="${path}"/>
+              </svg>
+            </span>
+          </span>
+        </span>
+      </span>
     `;
   }
 
-  connectedCallback() {
-    this.render("preTemplate");
+  static get observedAttributes() {
+    return ["path", "name", "size", "horizontal", "vertical", "spin", "rotate"];
+  }
 
-    const objectElement = this.querySelector("object");
+  attributeChangedCallback(name, oldValue, newValue) {
+    this.render();
+  }
+
+  connectedCallback() {
+    this.render();
+  }
+
+  render() {
+    const path = this.getAttribute("path");
+    if (path) return this.setView(this.template(path));
+    this.setPreTemplate();
+  }
+
+  setPreTemplate() {
+    this.setView(this.preTemplate);
+
+    const objectElement = this.shadow.querySelector("object");
     objectElement.addEventListener("load", () => {
-      this.render("template");
+      const svgDoc = objectElement.contentDocument;
+      const pathElement = svgDoc.querySelector("path");
+      const path = pathElement.getAttribute("d");
+      this.setAttribute("path", path);
+      this.render();
     })
   }
 
-  render(type) {
+  setView(template) {
     const templateEl = document.createElement("template");
-    templateEl.innerHTML = this[type];
-    this.innerHTML = ``;
-    this.appendChild(templateEl.content.cloneNode(true));
+    templateEl.innerHTML = template;
+    this.shadow.innerHTML = ``;
+    this.shadow.appendChild(templateEl.content.cloneNode(true));
   }
 }
 

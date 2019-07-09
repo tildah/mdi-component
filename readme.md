@@ -1,31 +1,81 @@
-This is a package that implements material design icons in modern es6 web components.
+# Web Component for Material Design Icons
 
-# Install
+This is a package that implements material design icons in es6 web components.
+
 ```
 npm i mdi-component
 ```
 
-# Usage
+## Usage
 **HTML**
 
-Add `mdi-compoent` and set its attribute `name` to your icon reference in *camelCase*. Eg:
 ```html
 <body>
-  <mdi-component name="account-circle"></mdi-component>
-  <script src="main.js" type="module"></script>
+  <mdi-component 
+    name="account-circle"
+    size="36px"
+    horizontal
+    vertical
+    rotate="45"
+    color="blue"
+    >
+  </mdi-component>
+  <script src="/node_modules/mdi-component/mdi-component.js"></script>
 </body>
 ```
 
-**JS**
+## Attributes
 
-In JS, just import the module.
+| Attribute  | Default                  | Details |
+|------------|--------------------------|---------|
+| name       | `null`                   | Icon name |
+| path       | required if name is null | SVG path data. Usually from [@mdi/js](https://github.com/Templarian/MaterialDesign-JS)
+| size       | inherited                | `40px`, `1.3rem`... |
+| horizontal | inexistant               | Flip horizontal |
+| vertical   | inexistant               | Flip vertical |
+| rotate     | 0                        | Degrees `0` to `360` |
+| color      | inherited                | `rgb()` / `rgba()` / `#000` |
+| spin       | inexistant               | Spin animation |
 
-**main.js**:
-```javascript
-import "/node_modules/mdi-component/mdi-component.js";
+## Use of `path` attribute
+In order to use the attribute `path`, the component must be used in an ES6 module. Eg:
+**HTML**
+```html
+<body>
+  <main-page></main-page>
+  <script src="./main.js" type="module"></script>
+</body>
 ```
+**JS (main.js)**
+```javascript
+import { mdiAccount } from "/node_modules/@mdi/js/mdi.js";
+import "/node_modules/mdi-component/mdi-component.js";
 
-Run your server and enjoy! :)
+class MainPage extends HTMLElement {
 
-# Customization
-You can give it classes, ids, inline-styling. It's just an HTML element like the others.
+  constructor() {
+    super();
+    this.shadow = this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() {
+    this.shadow.innerHTML = "";
+    const templateEl = document.createElement("template");
+    templateEl.innerHTML = this.template;
+    this.shadow.appendChild(templateEl.content.cloneNode(true));
+  }
+
+  get template() {
+    return `
+      <mdi-component
+        path="${mdiAccount}"
+        >
+      </mdi-component>
+    `;
+  }
+
+}
+
+customElements.define("main-page", MainPage);
+
+```
