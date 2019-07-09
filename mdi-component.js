@@ -1,3 +1,5 @@
+const baseURI = document.currentScript ? document.currentScript.baseURI : "";
+
 class MDIComponent extends HTMLElement {
 
   constructor(...args) {
@@ -8,7 +10,7 @@ class MDIComponent extends HTMLElement {
   get preTemplate() {
 
     const name = this.getAttribute("name");
-    const filePath = `/node_modules/@mdi/svg/svg/${name}.svg`;
+    const filePath = `${baseURI}/node_modules/@mdi/svg/svg/${name}.svg`;
 
     if (!name) throw new Error("'path' and 'name' attributes are both null");
 
